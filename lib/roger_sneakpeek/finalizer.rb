@@ -23,7 +23,7 @@ module RogerSneakpeek
       options.update(call_options) if call_options
 
       unless options[:project]
-        fail ArgumentError, "You must specify a project to the RogerSneakpeek"
+        fail ArgumentError, "You must specify a project to RogerSneakpeek"
       end
 
       unless options[:gitlab_project]
