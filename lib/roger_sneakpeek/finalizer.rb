@@ -15,7 +15,7 @@ module RogerSneakpeek
       options = {
         zip: "zip",
         project: nil,
-        gitlab_id: false,
+        gitlab_project: nil,
         ci_only: true,
         sneakpeek_api_url: "http://api.peek.digitpaint.nl"
       }.update(@options)
@@ -26,8 +26,8 @@ module RogerSneakpeek
         fail ArgumentError, "You must specify a project to the RogerSneakpeek"
       end
 
-      unless options[:gitlab_id]
-        fail ArgumentError, "You must specify a gitlab_id to the RogerSneakpeek"
+      unless options[:gitlab_project]
+        fail ArgumentError, "You must specify a gitlab_project to RogerSneakpeek"
       end
 
       # If we run in ci_only mode and are not in CI we stop.
@@ -85,7 +85,7 @@ module RogerSneakpeek
 
       params = {
         sha: git.sha,
-        gitlab_id: current_options[:gitlab_id]
+        gitlab_project: current_options[:gitlab_project]
       }
 
       perform_upload(url, zip_path, params)

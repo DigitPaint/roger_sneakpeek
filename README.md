@@ -11,7 +11,7 @@ Upload current release to the Sneakpeek preview server.
 mockup.release do |r|
   r.finalize :sneakpeek,
     project: "PROJECT_NAME",
-    gitlab_id: GITLAB_PROJECT_ID,
+    gitlab_project: GITLAB_NAMESPACE_AND_PROJECT,
     ci_only: false, # Only set this if you want to upload sneakpeek from your dev machine
 end
 ```
