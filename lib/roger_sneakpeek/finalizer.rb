@@ -3,6 +3,7 @@ require "roger/test"
 require "tempfile"
 require "faraday"
 require "uri"
+require "json"
 
 require File.dirname(__FILE__) + "/git"
 
@@ -71,26 +72,30 @@ module RogerSneakpeek
     end
 
     def upload_release(zip_path)
-      project = current_options[:project]
       git = Git.new(path: release.project.path)
 
+      data = perform_upload(
+        sneakpeek_url(git),
+        zip_path,
+        sha: git.sha,
+        gitlab_project: current_options[:gitlab_project]
+      )
+
+      release.log(self, "Sneakpeek url: #{data['url']}") if data
+    ensure
+      File.unlink zip_path
+    end
+
+    def sneakpeek_url(git)
+      project = current_options[:project]
       case
       when git.tag
-        url = "/projects/#{project}/tags/#{URI.escape(git.tag)}"
+        "/projects/#{project}/tags/#{URI.escape(git.tag)}"
       when git.branch
-        url = "/projects/#{project}/branches/#{URI.escape(git.branch)}"
+        "/projects/#{project}/branches/#{URI.escape(git.branch)}"
       else
         fail "Current project is neither on a tag nor a branch"
       end
-
-      params = {
-        sha: git.sha,
-        gitlab_project: current_options[:gitlab_project]
-      }
-
-      perform_upload(url, zip_path, params)
-    ensure
-      File.unlink zip_path
     end
 
     def perform_upload(url, zip_path, params)
@@ -105,7 +110,14 @@ module RogerSneakpeek
 
       result = conn.post(url, data)
 
-      fail "Upload to Sneakpeek failed" if result.status != 200
+      case result.status
+      when 201
+        JSON.parse(result.body)
+      when 422
+        fail "Upload to Sneakpeek failed with error: #{response.body[:error]}"
+      else
+        fail "Upload to Sneakpeek failed with unknown error (status: #{result.status})"
+      end
     end
   end
 end
