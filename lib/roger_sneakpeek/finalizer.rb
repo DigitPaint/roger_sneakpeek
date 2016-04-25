@@ -6,6 +6,7 @@ require "uri"
 require "json"
 
 require File.dirname(__FILE__) + "/git"
+require File.dirname(__FILE__) + "/ci"
 
 module RogerSneakpeek
   # Finalizer to zip and upload release
@@ -32,7 +33,7 @@ module RogerSneakpeek
       end
 
       # If we run in ci_only mode and are not in CI we stop.
-      return if options[:ci_only] && !ENV["CI"]
+      return if options[:ci_only] && !CI.ci?
 
       @release = release
       @current_options = options
@@ -72,7 +73,11 @@ module RogerSneakpeek
     end
 
     def upload_release(zip_path)
-      git = Git.new(path: release.project.path)
+      if CI.ci?
+        git = CI.new()
+      else
+        git = Git.new(path: release.project.path)
+      end
 
       data = perform_upload(
         sneakpeek_url(git),
