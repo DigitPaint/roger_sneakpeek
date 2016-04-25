@@ -30,7 +30,7 @@ module RogerSneakpeek
     def scm_tag(ref)
       return nil unless File.exist?(git_dir)
 
-      tag = `git --git-dir=#{safe_git_dir} describe --tags #{ref} 2>&1`
+      tag = `git --git-dir=#{safe_git_dir} describe --tags --exact-match #{ref} 2>&1`
 
       tag.strip if $CHILD_STATUS.to_i == 0
     end
