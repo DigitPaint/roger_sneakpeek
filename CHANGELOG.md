@@ -1,6 +1,6 @@
 # Changelog
 
-## Next
+## 0.0.3
 * Add CI specific git info class
 
 ## 0.0.2
