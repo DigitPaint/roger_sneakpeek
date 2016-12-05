@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.0
+* Add compatibility with Roger 1.7.0
+
 ## 0.0.3
 * Add CI specific git info class
 

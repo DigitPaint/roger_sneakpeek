@@ -20,7 +20,7 @@ Gem::Specification.new do |s|
   s.files = `git ls-files`.split("\n")
   s.require_paths = ["lib"]
 
-  s.add_dependency "roger", "~> 1.4", ">= 1.0.0"
+  s.add_dependency "roger", "~> 1.7", ">= 1.0.0"
   s.add_dependency "faraday", "~> 0.8", ">= 0.8.11"
 
   s.add_development_dependency "rubocop", [">= 0"]

@@ -11,43 +11,40 @@ require File.dirname(__FILE__) + "/ci"
 module RogerSneakpeek
   # Finalizer to zip and upload release
   class Finalizer < Roger::Release::Finalizers::Base
-    attr_reader :release, :current_options
+    self.name = :sneakpeek
 
-    def call(release, call_options = {})
-      options = {
+    def default_options
+      {
         zip: "zip",
         project: nil,
         gitlab_project: nil,
         ci_only: true,
         sneakpeek_api_url: "http://api.peek.digitpaint.nl"
-      }.update(@options)
+      }
+    end
 
-      options.update(call_options) if call_options
-
-      unless options[:project]
+    def perform
+      unless @options[:project]
         fail ArgumentError, "You must specify a project to RogerSneakpeek"
       end
 
-      unless options[:gitlab_project]
+      unless @options[:gitlab_project]
         fail ArgumentError, "You must specify a gitlab_project to RogerSneakpeek"
       end
 
       # If we run in ci_only mode and are not in CI we stop.
-      return if options[:ci_only] && !CI.ci?
-
-      @release = release
-      @current_options = options
+      return if @options[:ci_only] && !CI.ci?
 
       check_zip_command
 
-      release.log(self, "Starting upload to Sneakpeek")
+      @release.log(self, "Starting upload to Sneakpeek")
       upload_release zip_release
     end
 
     protected
 
     def zip_command(*args)
-      ([Shellwords.escape(current_options[:zip])] + args).join(" ")
+      ([Shellwords.escape(@options[:zip])] + args).join(" ")
     end
 
     def check_zip_command
@@ -57,13 +54,13 @@ module RogerSneakpeek
     end
 
     def git(*args)
-      cmd = Shellwords.join([current_options[:git]] + args)
+      cmd = Shellwords.join([@options[:git]] + args)
       `#{cmd}`
     end
 
     def zip_release
       zip_path = Dir::Tmpname.create ["release", ".zip"] {}
-      ::Dir.chdir(release.build_path) do
+      ::Dir.chdir(@release.build_path) do
         command = zip_command("-r", "-9", Shellwords.escape(zip_path), "./*")
         output = `#{command}`
         fail "Could not generate zipfile\n#{output}" if $CHILD_STATUS.to_i != 0
@@ -76,23 +73,23 @@ module RogerSneakpeek
       if CI.ci?
         git = CI.new()
       else
-        git = Git.new(path: release.project.path)
+        git = Git.new(path: @release.project.path)
       end
 
       data = perform_upload(
         sneakpeek_url(git),
         zip_path,
         sha: git.sha,
-        gitlab_project: current_options[:gitlab_project]
+        gitlab_project: @options[:gitlab_project]
       )
 
-      release.log(self, "Sneakpeek url: #{data['url']}") if data
+      @release.log(self, "Sneakpeek url: #{data['url']}") if data
     ensure
       File.unlink zip_path
     end
 
     def sneakpeek_url(git)
-      project = current_options[:project]
+      project = @options[:project]
       case
       when git.tag
         "/projects/#{project}/tags/#{URI.escape(git.tag)}"
@@ -104,7 +101,7 @@ module RogerSneakpeek
     end
 
     def perform_upload(url, zip_path, params)
-      conn = Faraday.new(current_options[:sneakpeek_api_url]) do |f|
+      conn = Faraday.new(@options[:sneakpeek_api_url]) do |f|
         f.request :multipart
         f.request :url_encoded
         f.adapter :net_http
