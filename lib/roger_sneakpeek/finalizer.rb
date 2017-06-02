@@ -1,5 +1,6 @@
 require "shellwords"
 require "roger/test"
+require "roger/release"
 require "tempfile"
 require "faraday"
 require "uri"
