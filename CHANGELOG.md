@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.1
+* Require roger/release so we can use Roger::Release and not fail.
+
 ## 0.1.0
 * Add compatibility with Roger 1.7.0
 
