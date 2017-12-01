@@ -111,8 +111,16 @@ module RogerSneakpeek
       data = params.dup
       data[:file] = Faraday::UploadIO.new(zip_path, "application/zip")
 
-      result = conn.post(url, data)
+      result = conn.post do |req|
+        req.url url
+        req.body = data
+        req.options.timeout = 300
+      end
 
+      handle_result(result)
+    end
+
+    def handle_result(result)
       case result.status
       when 201
         JSON.parse(result.body)
