@@ -71,11 +71,11 @@ module RogerSneakpeek
     end
 
     def upload_release(zip_path)
-      if CI.ci?
-        git = CI.new()
-      else
-        git = Git.new(path: @release.project.path)
-      end
+      git = if CI.ci?
+              CI.new
+            else
+              Git.new(path: @release.project.path)
+            end
 
       data = perform_upload(
         sneakpeek_url(git),
