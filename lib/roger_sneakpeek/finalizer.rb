@@ -60,7 +60,7 @@ module RogerSneakpeek
     end
 
     def zip_release
-      zip_path = Dir::Tmpname.create ["release", ".zip"] {}
+      zip_path = Dir::Tmpname.create ["release", ".zip"], {}
       ::Dir.chdir(@release.build_path) do
         command = zip_command("-r", "-9", Shellwords.escape(zip_path), "./*")
         output = `#{command}`
