@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3
+* Ruby 2.5 compatibility fixes
+
+## 0.1.2
+* Larger timeout for upload
+* Fix linting errors
+
 ## 0.1.1
 * Require roger/release so we can use Roger::Release and not fail.
 
