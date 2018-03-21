@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.4
+* Ruby 2.5 compatibility fixes
+
 ## 0.1.3
 * Ruby 2.5 compatibility fixes
 

@@ -60,7 +60,7 @@ module RogerSneakpeek
     end
 
     def zip_release
-      zip_path = Dir::Tmpname.create ["release", ".zip"], {}
+      zip_path = tmpname
       ::Dir.chdir(@release.build_path) do
         command = zip_command("-r", "-9", Shellwords.escape(zip_path), "./*")
         output = `#{command}`
@@ -68,6 +68,12 @@ module RogerSneakpeek
       end
 
       zip_path
+    end
+
+    # Shameless rip-off of https://github.com/rails/rails/pull/31462/files
+    def tmpname
+      t = Time.now.strftime("%Y%m%d")
+      "release-zip-#{t}-#{$PROCESS_ID}-#{rand(0x100000000).to_s(36)}.zip"
     end
 
     def upload_release(zip_path)
