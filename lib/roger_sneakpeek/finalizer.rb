@@ -67,7 +67,7 @@ module RogerSneakpeek
         fail "Could not generate zipfile\n#{output}" if $CHILD_STATUS.to_i != 0
       end
 
-      zip_path
+      File.join(@release.build_path, zip_path)
     end
 
     # Shameless rip-off of https://github.com/rails/rails/pull/31462/files
