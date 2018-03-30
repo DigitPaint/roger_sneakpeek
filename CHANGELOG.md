@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.5
+* Fix placement of zip file
+* Update rubocop
+
 ## 0.1.4
 * Ruby 2.5 compatibility fixes
 
