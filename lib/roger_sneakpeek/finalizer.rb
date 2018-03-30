@@ -1,7 +1,7 @@
 require "shellwords"
 require "roger/test"
 require "roger/release"
-require "tempfile"
+require "tmpdir"
 require "faraday"
 require "uri"
 require "json"
@@ -60,7 +60,7 @@ module RogerSneakpeek
     end
 
     def zip_release
-      zip_path = tmpname
+      zip_path = File.join(Dir.tmpdir, tmpname)
       ::Dir.chdir(@release.build_path) do
         command = zip_command("-r", "-9", Shellwords.escape(zip_path), "./*")
         output = `#{command}`
